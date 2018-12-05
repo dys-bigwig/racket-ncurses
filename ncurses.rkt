@@ -106,14 +106,16 @@
 (define-curses napms (_fun _int -> _int))
 
 ;allows use of scheme chars and ORs any attributes
-(define (put_ch ch [ATTR A_NORMAL]) 
-  (let ([ch (char->integer ch)])
-    (addch (bitwise-ior ch ATTR))))
-
-;is there a better way to do the default 0 arguments?
-(define (add_border [ch0 0] [ch1 0] [ch2 0] [ch3 0]
-                    [ch4 0] [ch5 0] [ch6 0] [ch7 0])
-  (border ch0 ch1 ch2 ch3 ch4 ch5 ch6 ch7))
+(define rkt_addch
+ (case-lambda
+        [(ch) (let ([ch (char->integer ch)])
+		   (addch (bitwise-ior ch A_NORMAL)))]
+	[(ch attr) (let ([ch (char->integer ch)])
+		   (addch (bitwise-ior ch attr)))]
+        [(y x ch)  (let ([ch (char->integer ch)])
+		   (mvaddch y x (bitwise-ior ch A_NORMAL)))]
+        [(y x ch attr)  (let ([ch (char->integer ch)])
+		   (mvaddch y x (bitwise-ior ch attr)))]))
 
 ;implemented as a macro in curses.
 ;IIRC the variables you want the values stored in are
@@ -148,6 +150,7 @@
                          "ROTAS")])
     (mvwaddstr stdscr y x (car ls))
     (unless (eq? (cdr ls) '()) (loop (add1 y) x (cdr ls))))
+    (rkt_addch 2 2 #\A)
   (wgetch stdscr))
 
 (wrapper main)
