@@ -27,10 +27,12 @@
 (define A_VERTICAL 1073741824)
 
 ;ADDCH FUNCTIONS;
+;; DONE ;;
 (define-curses addch (_fun _long -> _int))
 (define-curses waddch (_fun _WINDOW-pointer _long -> _int))
 (define-curses mvaddch (_fun _int _int _long -> _int))
 (define-curses mvwaddch (_fun _WINDOW-pointer _int _int _long -> _int))
+
 
 ;ADDSTR FUNCTIONS
 (define-curses addstr (_fun _string -> _int))
@@ -117,6 +119,34 @@
         [(y x ch attr)  (let ([ch (char->integer ch)])
 		   (mvaddch y x (bitwise-ior ch attr)))]))
 
+(define rkt_waddch
+  (case-lambda
+    [(win ch)
+     (let ([ch (char->integer ch)])
+       (waddch win ch))]
+    [(win ch attr)
+     (let ([ch (char->integer ch)])
+       (waddch win (bitwise-ior ch attr)))]
+    [(win y x ch)
+     (let ([ch (char->integer ch)])
+       (mvwaddch win y x (bitwise-ior ch A_NORMAL)))]
+    [(win y x ch attr)
+     (let ([ch (char->integer ch)])
+       (mvwaddch win y x (bitwise-ior ch attr)))]))
+       
+(define rkt_addstr
+  (case-lambda
+    [(str) (addstr str)]
+    [(str attr)
+     (attron attr)
+     (addstr str)
+     (attroff attr)]
+    [(y x str) (mvaddstr y x str)]
+    [(y x str attr)
+     (attron attr)
+     (mvaddstr y x str)
+     (attroff attr)]))      
+
 ;implemented as a macro in curses.
 ;IIRC the variables you want the values stored in are
 ;passed to the "function" which is replaced with: 
@@ -148,7 +178,7 @@
                          "TENET"
                          "OPERA"
                          "ROTAS")])
-    (mvwaddstr stdscr y x (car ls))
+    (rkt_addstr y x (car ls))
     (unless (eq? (cdr ls) '()) (loop (add1 y) x (cdr ls))))
     (rkt_addch 2 2 #\A)
   (wgetch stdscr))
