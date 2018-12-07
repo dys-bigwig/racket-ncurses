@@ -2,6 +2,7 @@
 (require ffi/unsafe
         ffi/unsafe/define)
 (define-ffi-definer define-curses (ffi-lib "libncurses" '("5" #f)))
+(define-ffi-definer define-panel (ffi-lib "libpanel" '("5" #f)))
 ;couldn't get it to work without putting a specific version number
 ;figure out how to fix so as to use available version
 (define _WINDOW-pointer (_cpointer 'WINDOW))
@@ -26,13 +27,14 @@
 (define A_TOP 536870912)
 (define A_VERTICAL 1073741824)
 
+;CURSES FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;ADDCH FUNCTIONS;
 ;; DONE ;;
 (define-curses addch (_fun _long -> _int))
 (define-curses waddch (_fun _WINDOW-pointer _long -> _int))
 (define-curses mvaddch (_fun _int _int _long -> _int))
 (define-curses mvwaddch (_fun _WINDOW-pointer _int _int _long -> _int))
-
 
 ;ADDSTR FUNCTIONS
 (define-curses addstr (_fun _string -> _int))
@@ -74,6 +76,7 @@
 ;INITIALIZATION FUNCTIONS;
 (define-curses initscr (_fun -> _WINDOW-pointer))
 (define-curses curs_set (_fun _int -> _int))
+(define-curses newwin (_fun _int _int _int _int -> _WINDOW-pointer))
 (define-curses endwin (_fun -> _int))
 (define-curses newpad (_fun _int _int -> _WINDOW-pointer))
 (define-curses delwin (_fun _WINDOW-pointer -> _int))
@@ -84,6 +87,7 @@
 ;SCREEN-UPDATE FUNCTIONS;
 (define-curses doupdate (_fun -> _void))
 (define-curses wnoutrefresh (_fun _WINDOW-pointer -> _int))
+(define-curses refresh (_fun -> _int))
 (define-curses wrefresh (_fun _WINDOW-pointer -> _int))
 (define-curses leaveok (_fun _WINDOW-pointer _bool -> _int))
 
@@ -106,6 +110,12 @@
 (define-curses getmaxy (_fun _WINDOW-pointer -> _int))
 (define-curses getmaxx (_fun _WINDOW-pointer -> _int))
 (define-curses napms (_fun _int -> _int))
+
+;PANELS;
+(define-panel new_panel (_fun _WINDOW-pointer -> _int))
+(define-panel update_panels (_fun -> _int))
+
+;RACKET API/INTERFACE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;allows use of scheme chars and ORs any attributes
 (define rkt_addch
@@ -133,7 +143,7 @@
     [(win y x ch attr)
      (let ([ch (char->integer ch)])
        (mvwaddch win y x (bitwise-ior ch attr)))]))
-       
+              
 (define rkt_addstr
   (case-lambda
     [(str) (addstr str)]
@@ -145,7 +155,20 @@
     [(y x str attr)
      (attron attr)
      (mvaddstr y x str)
-     (attroff attr)]))      
+     (attroff attr)]))     
+     
+(define rkt_waddstr
+  (case-lambda
+    [(win str) (waddstr str)]
+    [(win str attr)
+     (attron attr)
+     (waddstr win str)
+     (attroff attr)]
+    [(win y x str) (mvwaddstr win y x str)]
+    [(win y x str attr)
+     (wattron win attr)
+     (mvwaddstr win y x str)
+     (wattroff win attr)]))   
 
 ;implemented as a macro in curses.
 ;IIRC the variables you want the values stored in are
