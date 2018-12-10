@@ -176,6 +176,11 @@
 ;y = (getmaxy win); x = (getmaxx win);
 (define (getmaxyx win)
   (values (getmaxy win) (getmaxx win)))
+ 
+;is there a better way to do the default 0 arguments?
+(define (rkt_border [ch0 0] [ch1 0] [ch2 0] [ch3 0]
+                    [ch4 0] [ch5 0] [ch6 0] [ch7 0])
+  (border ch0 ch1 ch2 ch3 ch4 ch5 ch6 ch7))
 
 ;need a better way to do this
 ;if an error occurs during main, the terminal state is not reset.
@@ -191,7 +196,7 @@
     [max_y max_x]
     [values (getmaxy stdscr) (getmaxx stdscr)])
   (curs_set 0)
-  (add_border)
+  (rkt_border)
   (attron A_BOLD)
   ;I'm so sorry Daniel P. Friedman:
   (let loop ([y (quotient (- max_y 5) 2)]
