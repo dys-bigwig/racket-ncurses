@@ -41,7 +41,7 @@
 (define-curses addnstr (_fun _string _int -> _int))
 (define-curses waddstr (_fun _WINDOW-pointer _string -> _int))
 (define-curses waddnstr (_fun _WINDOW-pointer _string _int -> _int))
-(define-curses mvaddstr (_fun _int _int _string _int -> _int))
+(define-curses mvaddstr (_fun _int _int _string -> _int))
 (define-curses mvaddnstr (_fun _int _int _string _int -> _int))
 (define-curses mvwaddstr (_fun _WINDOW-pointer _int _int _string -> _int))
 (define-curses mvwaddnstr (_fun _WINDOW-pointer _int _int _string _int -> _int))
