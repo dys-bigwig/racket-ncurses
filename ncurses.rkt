@@ -171,9 +171,6 @@
      (wattroff win attr)]))   
 
 ;implemented as a macro in curses.
-;IIRC the variables you want the values stored in are
-;passed to the "function" which is replaced with: 
-;y = (getmaxy win); x = (getmaxx win);
 (define (getmaxyx win)
   (values (getmaxy win) (getmaxx win)))
  
@@ -182,33 +179,26 @@
                     [ch4 0] [ch5 0] [ch6 0] [ch7 0])
   (border ch0 ch1 ch2 ch3 ch4 ch5 ch6 ch7))
 
-;need a better way to do this
-;if an error occurs during main, the terminal state is not reset.
-(define (wrapper func)
-  (define stdscr (initscr))
-  (void (cbreak))
-  (void (start_color))
-  (func stdscr)
-  (void (endwin)))
+(define (reset-term)
+  (endwin))
 
 (define (main stdscr)
-  (define-values
-    [max_y max_x]
-    [values (getmaxy stdscr) (getmaxx stdscr)])
-  (curs_set 0)
-  (rkt_border)
-  (attron A_BOLD)
-  ;I'm so sorry Daniel P. Friedman:
-  (let loop ([y (quotient (- max_y 5) 2)]
-             [x (quotient (- max_x 5) 2)]
-             [ls       '("SATOR"
-                         "AREPO"
-                         "TENET"
-                         "OPERA"
-                         "ROTAS")])
-    (rkt_addstr y x (car ls))
-    (unless (eq? (cdr ls) '()) (loop (add1 y) x (cdr ls))))
-    (rkt_addch 2 2 #\A)
+  (/ 5 0)
+  (rkt_addch #\l A_REVERSE)
   (wgetch stdscr))
 
+(define (wrapper func)
+ (cbreak)
+ (keypad stdscr #t)
+ (start_color)
+ (define stdscr (initscr))
+  (call-with-exception-handler (lambda (e)
+                                 (write (exn-message e))
+                                 (newline)
+                                 (reset-term))
+                               (lambda ()
+                                 (void (main stdscr)
+                                       (reset-term)))))
+
 (wrapper main)
+
