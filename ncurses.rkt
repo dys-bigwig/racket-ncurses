@@ -208,4 +208,4 @@
     (rkt_addch #\l A_REVERSE)
     (wgetch stdscr))
 
-  (wrapper main))
+  (with-ncurses main))
