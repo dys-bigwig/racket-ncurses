@@ -182,23 +182,30 @@
 (define (reset-term)
   (endwin))
 
-(define (main stdscr)
-  (/ 5 0)
-  (rkt_addch #\l A_REVERSE)
-  (wgetch stdscr))
+(define (with-ncurses func)
+  (define stdscr (initscr))
+  (define init? #t)
+  (define (cleanup!)
+    (when init?
+      (reset-term)
+      (set! init? #f)))
+  (call-with-exception-handler
+    (lambda (exn)
+      (cleanup!)
+      exn)
+    (lambda ()
+      (call-with-continuation-barrier
+        (lambda ()
+          (dynamic-wind
+            void
+            (lambda () (func stdscr))
+            cleanup!))))))
 
-(define (wrapper func)
- (cbreak)
- (keypad stdscr #t)
- (start_color)
- (define stdscr (initscr))
-  (call-with-exception-handler (lambda (e)
-                                 (write (exn-message e))
-                                 (newline)
-                                 (reset-term))
-                               (lambda ()
-                                 (void (main stdscr)
-                                       (reset-term)))))
 
-(wrapper main)
+(module* main #f
+  (define (main stdscr)
+    (/ 5 0)
+    (rkt_addch #\l A_REVERSE)
+    (wgetch stdscr))
 
+  (wrapper main))
