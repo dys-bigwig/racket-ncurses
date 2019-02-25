@@ -74,6 +74,24 @@
   (define initscr curses:initscr)
   (define endwin curses:endwin)
 
+  (define (with-ncurses func)
+    (define stdscr (initscr))
+    (define init? #t)
+    (define (cleanup!)
+      (when init?
+        (endwin)
+        (set! init? #f)))
+    (call-with-exception-handler
+      (lambda (exn)
+        (cleanup!)
+        exn)
+      (lambda ()
+        (call-with-continuation-barrier
+          (lambda ()
+            (dynamic-wind
+              void
+              (lambda () (void (func)))
+              cleanup!))))))
 
   (define (test)
     (initscr)
@@ -83,8 +101,5 @@
     (getch)
     (endwin))
 
-  (call-with-exception-handler (lambda (e) 
-                                 (write (exn-message e))
-                                 (endwin))
-                               (lambda () (void (test))))
+  (with-ncurses test)
   )
