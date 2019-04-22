@@ -10,6 +10,8 @@
            (prefix-out curses: addstr)
            (prefix-out curses: attrset)
            (prefix-out curses: attron)
+           (prefix-out curses: addchstr)
+           (prefix-out curses: keypad)
            A_NORMAL
            A_STANDOUT
            A_UNDERLINE
@@ -25,17 +27,20 @@
            A_LOW
            A_RIGHT
            A_TOP
-           A_VERTICAL)
+           A_VERTICAL
+           chlist->chstr)
   (require ffi/unsafe
-           ffi/unsafe/define)
+           ffi/unsafe/define
+           ffi/unsafe/cvector)
   (define-ffi-definer define-curses (ffi-lib "libncurses" '("5" #f)))
   (define-ffi-definer define-panel (ffi-lib "libpanel" '("5" #f)))
   ;couldn't get it to work without putting a specific version number
   ;figure out how to fix so as to use available version
 
   (define _WINDOW-pointer (_cpointer 'WINDOW))
-  (define _chtype (make-ctype _long #f #f))
-
+  (define _chtype _ulong)
+  (define _chstr _cvector)
+  (define (chlist->chstr chars) (list->cvector chars _chtype))
 
   ;;ATTRIBUTE BITMASK CONSTANTS;
   (define A_NORMAL         #b0)
@@ -62,6 +67,7 @@
   (define-curses waddch (_fun _WINDOW-pointer _chtype -> _int))
   (define-curses mvaddch (_fun _int _int _chtype -> _int))
   (define-curses mvwaddch (_fun _WINDOW-pointer _int _int _chtype -> _int))
+  (define-curses addchstr (_fun _chstr -> _int))
 
   ;ADDSTR FUNCTIONS
   (define-curses addstr (_fun _string -> _int))
