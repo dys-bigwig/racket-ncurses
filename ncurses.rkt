@@ -1,5 +1,7 @@
 (module ncurses racket/base
   (require "curses-ffi.rkt")
+  (require racket/function)
+  (require threading)
 
   (define addch 
     (case-lambda
@@ -20,6 +22,13 @@
     (case-lambda
       [() (curses:getch)]
       [(win) (curses:wgetch win)]))
+
+  (define (addchstr str [attr 0])
+    (~>> (string->list str)
+         (map char->integer)
+         (map (curry bitwise-ior attr))
+         chlist->chstr
+         curses:addchstr))
 
   ;  (define rkt_waddch
   ;    (case-lambda
@@ -73,6 +82,7 @@
   (define attrset curses:attrset)
   (define initscr curses:initscr)
   (define endwin curses:endwin)
+  (define keypad curses:keypad)
 
   (define (with-ncurses func)
     (define stdscr (initscr))
@@ -90,14 +100,12 @@
           (lambda ()
             (dynamic-wind
               void
-              (lambda () (void (func)))
+              (lambda () (void (func stdscr)))
               cleanup!))))))
 
-  (define (test)
+  (define (test stdscr)
     (initscr)
-    (for ([atr (in-cycle `(,A_REVERSE ,A_NORMAL))]
-          [ch (string->list "ABRACADABRA")])
-      (addch ch atr))
+    (addchstr "Howdy" A_UNDERLINE)
     (getch)
     (endwin))
 
