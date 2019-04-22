@@ -40,7 +40,7 @@
   (define _WINDOW-pointer (_cpointer 'WINDOW))
   (define _chtype _ulong)
   (define _chstr _cvector)
-  (define (chlist->chstr chars) (list->cvector chars _chtype))
+  (define (chlist->chstr chars) (list->cvector (append chars '(0)) _chtype))
 
   ;;ATTRIBUTE BITMASK CONSTANTS;
   (define A_NORMAL         #b0)
