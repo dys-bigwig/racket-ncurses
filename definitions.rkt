@@ -1,5 +1,4 @@
 #lang racket/base
-
 (require ffi/unsafe
          ffi/unsafe/define
          ffi/unsafe/cvector)
@@ -30,6 +29,7 @@
 (define-curses mvaddnstr (_fun _int _int _string _int -> _int))
 (define-curses mvwaddstr (_fun _WINDOW-pointer _int _int _string -> _int))
 (define-curses mvwaddnstr (_fun _WINDOW-pointer _int _int _string _int -> _int))
+(define-curses mvwaddchstr (_fun _WINDOW-pointer _int _int _chstr -> _int))
 
 ;COLOUR/GRAPHICAL FUNCTIONS
 (define-curses assume_default_colors (_fun _int _int -> _int))
@@ -103,3 +103,4 @@
 ;PANELS;
 (define-panel new_panel (_fun _WINDOW-pointer -> _int))
 (define-panel update_panels (_fun -> _int))
+
