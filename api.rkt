@@ -5,9 +5,7 @@
 
 (provide with-ncurses)
 (provide (all-from-out "constants.rkt"))
-(provide addch)
-(provide getch)
-(provide addchstr)
+(provide (all-defined-out))
 
 (define stdscr (make-parameter #f))
 
@@ -19,12 +17,16 @@
 (define (get-cursor-x [win (stdscr)])
   (ffi:getcurx win))
 
-(define (addchstr str [atr 0])
+(define (addchstr str
+                  #:win [win (stdscr)]
+                  #:y [y (ffi:getcury win)]
+                  #:x [x (ffi:getcurx win)]
+                  #:atr [atr 0])
   (let ([chlist (map (lambda (ch)
                        (bitwise-ior atr
                                     (char->integer ch)))
                      (string->list str))]) 
-    (ffi:addchstr (ffi:chlist->chstr chlist))))
+    (ffi:mvwaddchstr win y x (ffi:chlist->chstr chlist))))
 
 (define (addch ch #:win [win (stdscr)]
                   #:y [y (ffi:getcury win)]
@@ -83,7 +85,7 @@
                 [ch4 0] [ch5 0] [ch6 0] [ch7 0])
   (ffi:border ch0 ch1 ch2 ch3 ch4 ch5 ch6 ch7))
 
-(define (getmaxyx win)
+(define (getmaxyx [win (stdscr)])
   (values (ffi:getmaxy win) (ffi:getmaxx win)))
 (define (get-curyx win)
   (values (ffi:getcury win) (ffi:getcurx win)))
