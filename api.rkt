@@ -3,7 +3,6 @@
 (require (prefix-in ffi: "definitions.rkt"))
 (require "constants.rkt")
 
-(provide with-ncurses)
 (provide (all-from-out "constants.rkt"))
 (provide (all-defined-out))
 
