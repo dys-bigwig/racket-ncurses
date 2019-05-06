@@ -4,13 +4,12 @@
 (define (test)
   (define-values (screen-height screen-width)
                  (getmaxyx))
-  (define centre-y (quotient screen-height 2))
-  (define centre-x (quotient screen-width 2))
-  (define incantation "ABRACADABRA")
+  (define-values (centre-y centre-x)
+                 (values (quotient screen-height 2)
+                         (quotient screen-width 2)))
   (init-pair! 1 COLOR_WHITE COLOR_RED)
-  (attron (bitwise-ior A_BLINK A_BOLD) #:color 1)
-  (addstr "ABRACADABRA" #:y centre-y #:x (- centre-x
-                                            (string-length incantation)))
+  (addch #\Y (color-pair 1) A_BOLD #:y centre-y
+                                   #:x (sub1 centre-x))
   (getch))
 
 (with-ncurses test)

@@ -8,8 +8,11 @@
 
 (define stdscr (make-parameter #f))
 
-(define (attron attr #:color [color 0])
-  (ffi:attron (bitwise-ior attr (color-pair color))))
+(define (attron . attrs)
+  (ffi:attron (foldl (lambda (attr res)
+                       (bitwise-ior attr res))
+                     0
+                     attrs)))
 
 (define (addstr str #:win [win (stdscr)]
                     #:y [y (ffi:getcury win)]
@@ -27,19 +30,25 @@
                   #:win [win (stdscr)]
                   #:y [y (ffi:getcury win)]
                   #:x [x (ffi:getcurx win)]
-                  #:attr [attr 0])
+                  . attrs)
   (let ([chlist (map (lambda (ch)
-                       (bitwise-ior attr
-                                    (char->integer ch)))
+                       (foldl (lambda (attr res)
+                                (bitwise-ior attr
+                                             res))
+                              (char->integer ch)
+                              attrs))
                      (string->list str))]) 
     (ffi:mvwaddchstr win y x (ffi:chlist->chstr chlist))))
 
 (define (addch ch #:win [win (stdscr)]
                   #:y [y (ffi:getcury win)]
                   #:x [x (ffi:getcurx win)]
-                  #:attr [attr 0])
-  (let ([ch (bitwise-ior attr
-                         (char->integer ch))])
+                  . attrs)
+  (let ([ch (foldl (lambda (attr res)
+                     (bitwise-ior attr
+                                  res))
+                   (char->integer ch)
+                   attrs)])
     (ffi:mvwaddch win y x ch)))
 
 (define (getch [win (stdscr)])
