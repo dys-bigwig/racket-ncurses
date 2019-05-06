@@ -8,7 +8,14 @@
 
 (define stdscr (make-parameter #f))
 
-(define change-color? ffi:can_change_color)
+(define (attron attr #:color [color 0])
+  (ffi:attron (bitwise-ior attr (color-pair color))))
+
+(define (addstr str #:win [win (stdscr)]
+                    #:y [y (ffi:getcury win)]
+                    #:x [x (ffi:getcurx win)]
+                    #:n [n -1])
+  (ffi:mvwaddnstr win y x str n))
 
 (define (get-cursor-y [win (stdscr)])
   (ffi:getcury win))
@@ -20,9 +27,9 @@
                   #:win [win (stdscr)]
                   #:y [y (ffi:getcury win)]
                   #:x [x (ffi:getcurx win)]
-                  #:atr [atr 0])
+                  #:attr [attr 0])
   (let ([chlist (map (lambda (ch)
-                       (bitwise-ior atr
+                       (bitwise-ior attr
                                     (char->integer ch)))
                      (string->list str))]) 
     (ffi:mvwaddchstr win y x (ffi:chlist->chstr chlist))))
@@ -30,8 +37,8 @@
 (define (addch ch #:win [win (stdscr)]
                   #:y [y (ffi:getcury win)]
                   #:x [x (ffi:getcurx win)]
-                  #:atr [atr 0])
-  (let ([ch (bitwise-ior atr
+                  #:attr [attr 0])
+  (let ([ch (bitwise-ior attr
                          (char->integer ch))])
     (ffi:mvwaddch win y x ch)))
 
@@ -89,18 +96,23 @@
 (define (get-curyx win)
   (values (ffi:getcury win) (ffi:getcurx win)))
 
-(define addstr ffi:addstr)
-(define attrset ffi:attrset)
+(define attr_get ffi:attr_get)
 (define initscr ffi:initscr)
-(define endwin ffi:endwin)
 (define keypad ffi:keypad)
+(define init-pair! ffi:init_pair)
+(define attrset! ffi:attrset)
+(define (color-pair n)
+  (arithmetic-shift n 8))
 
-(define (with-ncurses func)
+(define (with-ncurses func
+                      #:color [color #t])
   (stdscr (initscr))
+  (when (and (ffi:has_colors) color)
+    (ffi:start_color))
   (define init? #t)
   (define (cleanup!)
     (when init?
-      (endwin)
+      (ffi:endwin)
       (set! init? #f)))
   (call-with-exception-handler
     (lambda (exn)

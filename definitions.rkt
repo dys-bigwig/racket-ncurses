@@ -10,6 +10,7 @@
 (define _WINDOW-pointer (_cpointer 'WINDOW))
 (define _chtype _ulong)
 (define _chstr _cvector)
+(define _attr_t _ulong)
 (define (chlist->chstr chars) (list->cvector (append chars '(0)) _chtype))
 
 ;ADDCH FUNCTIONS;
@@ -33,12 +34,15 @@
 
 ;COLOUR/GRAPHICAL FUNCTIONS
 (define-curses assume_default_colors (_fun _int _int -> _int))
+(define-curses has_colors (_fun -> _bool))
 (define-curses start_color (_fun -> _int))
+(define-curses init_pair (_fun _short _short _short -> _int))
 (define-curses attroff (_fun _int -> _int))
 (define-curses attron (_fun _int -> _int))
 (define-curses wattroff (_fun _WINDOW-pointer _int -> _int))
 (define-curses wattron (_fun _WINDOW-pointer _int -> _int))
 (define-curses attrset (_fun _int -> _int))
+(define-curses attr_set (_fun _attr_t _short -> _int))
 (define-curses wattrset (_fun _WINDOW-pointer _int -> _int))
 (define-curses bkgd (_fun _long -> _int))
 (define-curses wbkgd (_fun _WINDOW-pointer _long -> _int))
@@ -83,6 +87,10 @@
 (define-curses wgetch (_fun _WINDOW-pointer -> _int))
 (define-curses keypad (_fun _WINDOW-pointer _bool -> _int))
 
+;ATTRS
+(define-curses attr_get (_fun (a : (_ptr o _ulong))
+                                  (c : (_ptr o _short))
+                                  -> _int -> (values a c)))
 ;MISC;
 (define-curses beep (_fun -> _int))
 (define-curses baudrate (_fun -> _int))
