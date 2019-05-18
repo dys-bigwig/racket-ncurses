@@ -51,6 +51,9 @@
 (define-curses border (_fun _long _long _long _long 
                             _long _long _long _long 
                             -> _int))
+(define-curses wborder (_fun _WINDOW-pointer _long _long _long _long 
+                             _long _long _long _long 
+                             -> _int))
 (define-curses box (_fun _WINDOW-pointer _long _long -> _int))
 (define-curses chgat (_fun _int _long _short -> _int))
 (define-curses clear (_fun -> _int))
@@ -81,6 +84,8 @@
 (define-curses leaveok (_fun _WINDOW-pointer _bool -> _int))
 
 ;INPUT FUNCTIONS;
+(define-curses echo (_fun -> _int))
+(define-curses noecho (_fun -> _int))
 (define-curses cbreak (_fun -> _int))
 (define-curses nocbreak (_fun -> _int))
 (define-curses getch (_fun -> _int))
@@ -89,8 +94,8 @@
 
 ;ATTRS
 (define-curses attr_get (_fun (a : (_ptr o _ulong))
-                                  (c : (_ptr o _short))
-                                  -> _int -> (values a c)))
+                              (c : (_ptr o _short))
+                              -> _int -> (values a c)))
 ;MISC;
 (define-curses beep (_fun -> _int))
 (define-curses baudrate (_fun -> _int))
