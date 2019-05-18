@@ -3,13 +3,15 @@
 
 (define (test)
   (define-values (screen-height screen-width)
-                 (getmaxyx))
-  (define-values (centre-y centre-x)
-                 (values (quotient screen-height 2)
-                         (quotient screen-width 2)))
+    (getmaxyx))
   (init-pair! 1 COLOR_WHITE COLOR_RED)
-  (addch #\Y (color-pair 1) A_BOLD #:y centre-y
-                                   #:x (sub1 centre-x))
+  (let ([ch (string (getch))])
+  (addchstr (format "YOU PRESSED ~a!" ch)
+            (color-pair 1) A_BOLD
+            #:y (quotient screen-height 2)
+            #:x (quotient (- screen-width
+                             (string-length "YOU PRESSED ~a!"))
+                          2)))
   (getch))
 
 (with-ncurses test)
