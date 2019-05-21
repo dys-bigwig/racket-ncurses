@@ -95,7 +95,7 @@
 ;ATTRS
 (define-curses attr_get (_fun (a : (_ptr o _ulong))
                               (c : (_ptr o _short))
-                              -> _int -> (values a c)))
+                              -> _int -> (list a c)))
 ;MISC;
 (define-curses beep (_fun -> _int))
 (define-curses baudrate (_fun -> _int))
