@@ -17,8 +17,13 @@
 (define (addstr str #:win [win (stdscr)]
                     #:y [y (ffi:getcury win)]
                     #:x [x (ffi:getcurx win)]
-                    #:n [n -1])
-  (ffi:mvwaddnstr win y x str n))
+                    #:n [n -1]
+                    . attrs)
+  (define as (foldl (lambda (attr res)
+                      (bitwise-ior attr res)) 0 (attr_get)))
+  (apply attron attrs)
+  (ffi:mvwaddnstr win y x str n)
+  (attr_set as))
 
 (define (get-cursor-y [win (stdscr)])
   (ffi:getcury win))
@@ -73,7 +78,7 @@
 (define initscr ffi:initscr)
 (define keypad ffi:keypad)
 (define init-pair! ffi:init_pair)
-(define attrset! ffi:attrset)
+(define attr_set ffi:attrset)
 (define (color-pair n)
   (arithmetic-shift n 8))
 
