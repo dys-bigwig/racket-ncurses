@@ -89,7 +89,9 @@
 (define-curses cbreak (_fun -> _int))
 (define-curses nocbreak (_fun -> _int))
 (define-curses getch (_fun -> _int))
-(define-curses wgetch (_fun _WINDOW-pointer -> _int))
+(define-curses wgetch (_fun _WINDOW-pointer
+                            -> (c : _int)
+                            -> (integer->char c)))
 (define-curses keypad (_fun _WINDOW-pointer _bool -> _int))
 
 ;ATTRS
