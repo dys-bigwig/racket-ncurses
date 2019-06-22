@@ -1,67 +1,56 @@
 #lang racket/base
 
+(require racket/function)
 (require (prefix-in ffi: "definitions.rkt"))
 (require "constants.rkt")
 
 (provide (all-from-out "constants.rkt"))
 (provide (all-defined-out))
 
+(define (fold-attrs attrs)
+  (foldr bitwise-ior 0 attrs))
+
 (define stdscr (make-parameter #f))
 
 (define (attron #:win [win (stdscr)] . attrs)
-  (ffi:wattron win (foldl (lambda (attr res)
-                            (bitwise-ior attr res))
-                          0
-                          attrs)))
+  (ffi:wattron win (fold-attrs attrs)))
 
-(define (addstr str #:win [win (stdscr)]
-                    #:y [y (ffi:getcury win)]
-                    #:x [x (ffi:getcurx win)]
-                    #:n [n -1]
-                    . attrs)
-  (define as (foldl (lambda (attr res)
-                      (bitwise-ior attr res)) 0 (attr_get)))
-  (apply attron attrs)
-  (ffi:mvwaddnstr win y x str n)
-  (attr_set as))
-
-(define (get-cursor-y [win (stdscr)])
-  (ffi:getcury win))
-
-(define (get-cursor-x [win (stdscr)])
-  (ffi:getcurx win))
+(define (addstr str
+                #:win [win (stdscr)]
+                #:y   [y (ffi:getcury win)]
+                #:x   [x (ffi:getcurx win)]
+                #:n   [n -1]
+                . attrs)
+  (let ([previous-attrs (fold-attrs (ffi:attr_get))])
+    (parameterize ([stdscr win])
+      (apply attron attrs)
+      (ffi:mvwaddnstr win y x str n)
+      (attr-set! previous-attrs))))
 
 (define (addchstr str
                   #:win [win (stdscr)]
-                  #:y [y (ffi:getcury win)]
-                  #:x [x (ffi:getcurx win)]
+                  #:y   [y (ffi:getcury win)]
+                  #:x   [x (ffi:getcurx win)]
                   . attrs)
-  (let ([chlist (map (lambda (ch)
-                       (foldl (lambda (attr res)
-                                (bitwise-ior attr
-                                             res))
-                              (char->integer ch)
-                              attrs))
-                     (string->list str))]) 
+  (let* ([attrs (fold-attrs attrs)]
+         [chlist (for/list ([ch (string->list str)])
+                   (bitwise-ior (char->integer ch) attrs))]) 
     (ffi:mvwaddchstr win y x (ffi:chlist->chstr chlist))))
 
 (define (addch ch #:win [win (stdscr)]
-                  #:y [y (ffi:getcury win)]
-                  #:x [x (ffi:getcurx win)]
-                  . attrs)
-  (let ([ch (foldl (lambda (attr res)
-                     (bitwise-ior attr
-                                  res))
-                   (char->integer ch)
-                   attrs)])
+               #:y [y (ffi:getcury win)]
+               #:x [x (ffi:getcurx win)]
+               . attrs)
+  (let ([ch (bitwise-ior (char->integer ch)
+                         (fold-attrs attrs))])
     (ffi:mvwaddch win y x ch)))
 
 (define (getch [win (stdscr)])
-  (integer->char (ffi:wgetch win)))
+  (ffi:wgetch win))
 
 (define (border #:win [win (stdscr)]
-                 [ch0 0] [ch1 0] [ch2 0] [ch3 0]
-                 [ch4 0] [ch5 0] [ch6 0] [ch7 0])
+                #:ch0 [ch0 0] #:ch1 [ch1 0] #:ch2 [ch2 0] #:ch3 [ch3 0]
+                #:ch4 [ch4 0] #:ch5 [ch5 0] #:ch6 [ch6 0] #:ch7 [ch7 0])
   (ffi:wborder win ch0 ch1 ch2 ch3 ch4 ch5 ch6 ch7))
 
 (define (getmaxyx [win (stdscr)])
@@ -74,18 +63,16 @@
     (ffi:echo)
     (ffi:noecho)))
 
-(define attr_get ffi:attr_get)
-(define initscr ffi:initscr)
 (define keypad ffi:keypad)
 (define init-pair! ffi:init_pair)
-(define attr_set ffi:attrset)
+(define attr-set! ffi:attrset)
 (define (color-pair n)
   (arithmetic-shift n 8))
 
 (define (with-ncurses func
                       #:color? [color? #t]
                       #:echo?  [echo? #f])
-  (stdscr (initscr))
+  (stdscr (ffi:initscr))
   (when (and (ffi:has_colors) color?)
     (ffi:start_color))
   (unless echo?
@@ -104,5 +91,5 @@
         (lambda ()
           (dynamic-wind
             void
-            (lambda () (void (func)))
+            (thunk (void (func)))
             cleanup!))))))
