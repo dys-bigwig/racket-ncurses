@@ -6,7 +6,7 @@
     (getmaxyx))
   (init-pair! 1 COLOR_WHITE COLOR_RED)
   (let ([ch (string (getch))])
-  (addchstr (format "YOU PRESSED ~a!" ch)
+  (addstr (format "YOU PRESSED ~a!" ch)
             (color-pair 1) A_BOLD
             #:y (quotient screen-height 2)
             #:x (quotient (- screen-width
