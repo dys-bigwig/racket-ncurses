@@ -29,6 +29,7 @@ Here's the (admittedly silly) example from test.rkt to give an example of what y
   (getch #:win foowin)
   (delwin foowin))
 
+(with-ncurses test)
 ```
 The ```with-ncurses``` function is used at the start of your program to automatically initialise ncurses - if you've used the Python api for ncurses before, it serves the same purpose as its ```wrapper``` function. You pass your main function as a callback, and it will be run after the curses environment has been initialised. It takes ```#:start-color?``` as a keyword argument; however, color will be enabled by default, so you need only use this argument if you wish for color to be disabled, in which case you would pass #f as the argument.
 
