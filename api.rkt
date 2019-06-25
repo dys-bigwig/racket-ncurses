@@ -59,6 +59,7 @@
 
 (define echo! ffi:echo)
 (define noecho! ffi:noecho)
+(define nodelay ffi:nodelay)
 
 (define curs-set ffi:curs_set)
 (define newwin ffi:newwin)
