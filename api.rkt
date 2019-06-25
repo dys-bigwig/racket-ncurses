@@ -1,6 +1,5 @@
 #lang racket/base
 
-(require racket/function)
 (require (prefix-in ffi: "definitions.rkt"))
 (require "constants.rkt")
 
@@ -91,5 +90,5 @@
         (lambda ()
           (dynamic-wind
             void
-            (thunk (void (func)))
+            (λ () (void (func)))
             cleanup!))))))
