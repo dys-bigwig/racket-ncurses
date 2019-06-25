@@ -114,6 +114,7 @@
 (define-curses getcurx (_fun _WINDOW-pointer -> _int))
 (define-curses napms (_fun _int -> _int))
 (define-curses can_change_color (_fun -> _bool))
+(define-curses nodelay (_fun _bool -> _int))
 
 ;PANELS;
 (define-panel new_panel (_fun _WINDOW-pointer -> _int))
