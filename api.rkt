@@ -69,13 +69,10 @@
   (arithmetic-shift n 8))
 
 (define (with-ncurses func
-                      #:color? [color? #t]
-                      #:echo?  [echo? #f])
+                      #:start-color? [start-color? #t])
   (stdscr (ffi:initscr))
-  (when (and (ffi:has_colors) color?)
+  (when (and (ffi:has_colors) start-color?)
     (ffi:start_color))
-  (unless echo?
-    (ffi:noecho))
   (define init? #t)
   (define (cleanup!)
     (when init?
