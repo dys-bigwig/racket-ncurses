@@ -17,8 +17,7 @@ Here's the (admittedly silly) example from test.rkt to give an example of what y
     (getmaxyx))
   (init-pair! 1 COLOR_WHITE COLOR_RED)
   (let ([ch (getch)])
-  (addstr (format "YOU PRESSED ~a!" ch)
-          
+  (addstr (format "YOU PRESSED ~a!" ch)         
             (color-pair 1) A_BOLD A_UNDERLINE
             #:y (quotient screen-height 2)
             #:x (quotient (- screen-width
