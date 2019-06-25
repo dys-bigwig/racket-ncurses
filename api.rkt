@@ -44,7 +44,7 @@
                          (fold-attrs attrs))])
     (ffi:mvwaddch win y x ch)))
 
-(define (getch [win (stdscr)])
+(define (getch #:win [win (stdscr)])
   (ffi:wgetch win))
 
 (define (border #:win [win (stdscr)]
@@ -57,11 +57,14 @@
 (define (get-curyx win)
   (values (ffi:getcury win) (ffi:getcurx win)))
 
-(define (echo opt)
-  (if opt
-    (ffi:echo)
-    (ffi:noecho)))
+(define echo! ffi:echo)
+(define noecho! ffi:noecho)
 
+(define curs-set ffi:curs_set)
+(define newwin ffi:newwin)
+(define delwin ffi:delwin)
+(define (refresh #:win [win (stdscr)])
+  (ffi:wrefresh win))
 (define keypad ffi:keypad)
 (define init-pair! ffi:init_pair)
 (define attr-set! ffi:attrset)
