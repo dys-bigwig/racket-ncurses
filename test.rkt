@@ -5,7 +5,7 @@
   (define-values (screen-height screen-width)
     (getmaxyx))
   (init-pair! 1 COLOR_WHITE COLOR_RED)
-  (let ([ch (string (getch))])
+  (let ([ch (getch)])
   (addstr (format "YOU PRESSED ~a!" ch)
             (color-pair 1) A_BOLD
             #:y (quotient screen-height 2)
