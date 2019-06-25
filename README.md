@@ -73,6 +73,7 @@ A_VERTICAL
 * ```refresh``` - I won't even attempt to explain the complexities of window refreshing ;) I'll hopefully be adding the panels library soon.
 * ```echo! and noecho!``` - toggles whether typed text is echoed back to the user or not.
 * ```curs-set``` - toggles cursor visibility, with 0 being invisible and 2 being bold.
+* ```nodelay``` takes #f or #t, setting getch to be blocking or non-blocking respectively.
 
 If you're working on a particular window (other than stdscr) and you don't want to keep providing the #:win kwarg over-and-over again, you can use parameterize (https://docs.racket-lang.org/guide/parameterize.html) to set stdscr to your window of choice within the parameterize block.
 
