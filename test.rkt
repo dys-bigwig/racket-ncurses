@@ -1,5 +1,5 @@
 #lang racket
-(require "api.rkt")
+(require ncurses)
 
 (define (test)
   (define-values (screen-height screen-width)
