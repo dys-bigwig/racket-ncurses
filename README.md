@@ -70,7 +70,7 @@ A_VERTICAL
 * ```addchstr``` - similar to addstr, but with some difference which are outside the scope of this readme. For one, it does not advance the cursor, whereas addstr does.
 * ```newwin``` - creates a new window, taking the following arguments: lines, columns, x-origin, y-origin.
 * ```delwin``` - deletes a window.
-* ```refresh``` - I won't even attempt to explain the complexities of window refreshing ;) I'll hopefully be adding the panels library soon.
+* ```refresh``` - refreshes the window given as #:win kwarg, with the default being stdscr. 
 * ```echo! and noecho!``` - toggles whether typed text is echoed back to the user or not.
 * ```curs-set``` - toggles cursor visibility, with 0 being invisible and 2 being bold.
 * ```nodelay``` takes #f or #t, setting getch to be blocking or non-blocking respectively.
