@@ -34,8 +34,8 @@ Here's the (admittedly silly) example from test.rkt to give an example of what y
 The ```with-ncurses``` function is used at the start of your program to automatically initialise ncurses - if you've used the Python api for ncurses before, it serves the same purpose as its ```wrapper``` function. You pass your main function as a callback, and it will be run after the curses environment has been initialised. It takes ```#:start-color?``` as a keyword argument; however, color will be enabled by default, so you need only use this argument if you wish for color to be disabled, in which case you would pass #f as the argument.
 
 Though the usage of curses itself is somewhat outside the scope of this readme, here is a brief explanation of the functions used, with a particular emphasis upon those elements which are racket-specific:
-* ```getmaxyx``` - returns the height and width (maximum y and x values) of the screen as values. Due to the result being returnes as values, ```define-values``` is best used for binding its results.
-* ```init-pair!``` - used to initialise a pair of colors for use at a text attribute. The first color is the foreground (i.e. the color of the text itself) and the second colour is the background. The list of predefined colors is:
+* ```getmaxyx``` - returns the height and width (maximum y and x values) of the screen as values. Due to the result being returned as values, ```define-values``` is best used for binding its results.
+* ```init-pair!``` - used to initialise a pair of colors for use as a text attribute. The first color is the foreground (i.e. the color of the text itself) and the second colour is the background. The list of predefined colors is:
 ```
 COLOR_BLACK
 COLOR_RED
