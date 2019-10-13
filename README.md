@@ -47,7 +47,7 @@ COLOR_CYAN
 COLOR_WHITE
 ```
 * ```getch``` - reads a single character. You can use the keyword argument ```#:win``` to read from specific window. If no argument is given, then stdscr (the default screen which is initialised automatically using ```with-curses```) will be used.
-* ```addstr``` - draws a string to the chosen window (default is stdscr). The keyword arguments ```#:y```, ```#:x```, and ```#:win``` can be used to specify the location the string is to be drawn, and the window to which it is to be drawn. The default x and y positions are the current cursor position. Any number of attributes - such as bold, underline... and a single color-pair - can be provided after the string argument as a rest-arg. In the above example, ``(color-pair 1)`` and ```A_BOLD``` are given as attributes to be added to the string. The list of text attributes is:
+* ```addstr``` - draws a string to the chosen window (default is stdscr). The keyword arguments ```#:y```, ```#:x```, and ```#:win``` can be used to specify the location the string is to be drawn, and the window to which it is to be drawn. The default x and y positions are the current cursor position. Any number of attributes - such as bold, underline... and a single color-pair - can be provided after the string argument as a rest-arg. In the above example, ``(color-pair 1)`` and ```A_BOLD```. and ```A_UNDERLINE``` are given as attributes to be apllied to the string. The list of text attributes is:
 ```
 A_NORMAL       
 A_STANDOUT     
