@@ -41,7 +41,7 @@
                #:x [x (ffi:getcurx win)]
                . attrs)
   (let* ([attrs (fold-attrs attrs)] 
-        ([ch (bitwise-ior (char->integer ch) attrs)])
+         [ch (bitwise-ior (char->integer ch) attrs)])
     (ffi:mvwaddch win y x ch)))
 
 (define (getch #:win [win (stdscr)])
